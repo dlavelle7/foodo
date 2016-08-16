@@ -72,19 +72,22 @@ class User(Base):
     def __repr__(self):
         return "<User(name='%s')>" % (self.name)
 
-    def list_foodos(self, select_clause=[FooDo], filter_condition=[],
+    def list_foodos(self, columns=all_headers, filter_condition=None,
                     order_by_column=FooDo.id):
-        filter_condition.append(FooDo.user_id == self.id)
-        query = session.query(*select_clause).filter(
-                *filter_condition).order_by(order_by_column)
-
-        if select_clause == [FooDo]:
-            return [
-                [foodo.id, foodo.title, foodo.formatted_date,
-                 foodo.status] for foodo in query]
-        else:
-            # TODO: Fix unformatted date & this condition is iffy
-            return query
+        query = self.foodos
+        if filter_condition is not None:
+            query = self.foodos.filter(*filter_condition)
+        query = query.order_by(order_by_column)
+        results = []
+        for foodo in query:
+            row = []
+            for column in columns:
+                if column == "Date":
+                    row.append(foodo.formatted_date)
+                else:
+                    row.append(foodo.__getattribute__(column.lower()))
+            results.append(row)
+        return results
 
 
 # Create DB Schema (with tables that don't yet exist)
@@ -120,13 +123,8 @@ def delete_foodo(pargs, user):
 
 
 def display_table(pargs, table_data):
-    headers = []
-    if pargs.columns:
-        headers = [title for title in pargs.columns]
-    else:
-        headers = all_headers
-
     table_kwargs = {}
+    headers = pargs.columns if pargs.columns else all_headers
     if pargs.quiet:
         table_kwargs["tablefmt"] = "plain"
     elif pargs.verbose:
@@ -141,10 +139,8 @@ def display_table(pargs, table_data):
 def list_foodo(pargs, user):
     list_kwargs = defaultdict(list)
     if pargs.columns:
-        for col in pargs.columns:
-            column = FooDo.__table__.columns[col.lower()]
-            list_kwargs["select_clause"].append(column)
-    elif pargs.rows:
+        list_kwargs["columns"].extend(pargs.columns)
+    if pargs.rows:
         ids = [row for row in pargs.rows]
         list_kwargs["filter_condition"].append(FooDo.id.in_(ids))
     if pargs.complete:
@@ -188,16 +184,15 @@ def parse_args():
 
     # List subcommand
     list_parser = subparsers.add_parser("list", help="List your FooDos")
-    list_rc_group = list_parser.add_mutually_exclusive_group()
-    list_rc_group.add_argument("-r", "--rows",
-            help="Id(s) of FooDo(s) you wish to list", type=int, nargs="+")
-    list_rc_group.add_argument("-col", "--columns", choices=all_headers,
+    list_parser.add_argument("-col", "--columns", choices=all_headers,
             help="FooDo column name(s) you wish to list", type=str, nargs="+")
     list_status_group = list_parser.add_mutually_exclusive_group()
     list_status_group.add_argument("-c", "--complete",
             help="List completed FooDos only", action="store_true")
     list_status_group.add_argument("-a", "--active",
             help="List active FooDos only", action="store_true")
+    list_status_group.add_argument("-r", "--rows",
+            help="Id(s) of FooDo(s) you wish to list", type=int, nargs="+")
     list_verbosity_group = list_parser.add_mutually_exclusive_group()
     list_verbosity_group.add_argument("-q", "--quiet", help="Quiet mode",
                                       action="store_true")
