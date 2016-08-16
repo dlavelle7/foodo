@@ -124,15 +124,14 @@ def delete_foodo(pargs, user):
 
 def display_table(pargs, table_data):
     table_kwargs = {}
-    headers = pargs.columns if pargs.columns else all_headers
     if pargs.quiet:
         table_kwargs["tablefmt"] = "plain"
     elif pargs.verbose:
         table_kwargs["tablefmt"] = "fancy_grid"
-        table_kwargs["headers"] = headers
+        table_kwargs["headers"] = pargs.columns or all_headers
     else:
         table_kwargs["tablefmt"] = "simple"
-        table_kwargs["headers"] = headers
+        table_kwargs["headers"] = pargs.columns or all_headers
     print tabulate(table_data, **table_kwargs)
 
 
@@ -141,8 +140,7 @@ def list_foodo(pargs, user):
     if pargs.columns:
         list_kwargs["columns"].extend(pargs.columns)
     if pargs.rows:
-        ids = [row for row in pargs.rows]
-        list_kwargs["filter_condition"].append(FooDo.id.in_(ids))
+        list_kwargs["filter_condition"].append(FooDo.id.in_(pargs.rows))
     if pargs.complete:
         list_kwargs["filter_condition"].append(FooDo.status == "complete")
     elif pargs.active:
