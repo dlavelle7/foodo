@@ -90,11 +90,6 @@ class User(Base):
         return results
 
 
-# Create DB Schema (with tables that don't yet exist)
-if not os.path.exists(db_path):
-    Base.metadata.create_all(engine)
-
-
 def add_commit_model(model):
     session.add(model)
     session.commit()
@@ -201,6 +196,10 @@ def parse_args():
 
 
 def main():
+    # Create DB Schema (with tables that don't yet exist)
+    if not os.path.exists(db_path):
+        Base.metadata.create_all(engine)
+
     pargs = parse_args()
 
     user = session.query(User).get(os.getuid())
