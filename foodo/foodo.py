@@ -10,9 +10,7 @@ from collections import defaultdict
 from dateutil import tz
 from tabulate import tabulate
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker
 
 # TODO: DB Path (goes into site-packages when installed)?
 # Configure SQLite DB
@@ -21,74 +19,12 @@ db_path = os.path.join(basedir, 'foo.db')
 sql_alchemy_db_uri = 'sqlite:///' + db_path
 # Create core interface to the DB (echo prints SQL statements)
 engine = create_engine(sql_alchemy_db_uri, echo=False)
-# Use Declarative system - Map python classes to DB tables
-Base = declarative_base()
 # Create Session (ORMs handle to the the DB)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-all_headers = ["Id", "Title", "Date", "Status"]
-
+from foodo.models import FooDo, User, Base, all_headers
 # TODO: Create setup.py
-
-class FooDo(Base):
-    __tablename__ = "foodos"
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    date = Column(DateTime)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    status = Column(String)
-
-    def __init__(self, title, user_id):
-        self.title = title
-        self.user_id = user_id
-        self.date = datetime.datetime.utcnow()
-        self.status = "active"
-
-    def __repr__(self):
-        return "<FooDo(id='%s')>" % (self.id)
-
-    @property
-    def formatted_date(self):
-        # Make naive datetime object time zone aware
-        date_aware = self.date.replace(tzinfo=tz.tzutc())
-        # Display UTC datetime object in local time zone
-        date_aware = date_aware.astimezone(tz.tzlocal())
-        return date_aware.strftime("%H:%M %d-%m-%y")
-
-
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    foodos = relationship("FooDo", backref="user", lazy="dynamic")
-
-    def __init__(self):
-        self.id = os.getuid()
-        self.name = pwd.getpwuid(os.getuid())[0]
-
-    def __repr__(self):
-        return "<User(name='%s')>" % (self.name)
-
-    def list_foodos(self, columns=all_headers, filter_condition=None,
-                    order_by_column=FooDo.id):
-        query = self.foodos
-        if filter_condition is not None:
-            query = self.foodos.filter(*filter_condition)
-        query = query.order_by(order_by_column)
-        results = []
-        for foodo in query:
-            row = []
-            for column in columns:
-                if column == "Date":
-                    row.append(foodo.formatted_date)
-                else:
-                    row.append(foodo.__getattribute__(column.lower()))
-            results.append(row)
-        return results
-
 
 def add_commit_model(model):
     session.add(model)
