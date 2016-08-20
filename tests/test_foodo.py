@@ -1,6 +1,6 @@
 import unittest
-import foodo
 
+from foodo import foodo
 from argparse import ArgumentTypeError
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
