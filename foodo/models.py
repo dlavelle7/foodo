@@ -1,3 +1,8 @@
+import os
+import pwd
+import datetime
+
+from dateutil import tz
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
@@ -64,6 +69,3 @@ class User(Base):
                     row.append(foodo.__getattribute__(column.lower()))
             results.append(row)
         return results
-
-
-

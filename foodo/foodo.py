@@ -1,13 +1,9 @@
 """FooDo - A Command Line ToDo App"""
 import sys
-import traceback
 import os
-import pwd
-import datetime
 import argparse
 
 from collections import defaultdict
-from dateutil import tz
 from tabulate import tabulate
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -23,6 +19,7 @@ engine = create_engine(sql_alchemy_db_uri, echo=False)
 Session = sessionmaker(bind=engine)
 session = Session()
 
+# TODO: Relative import works but not absolute
 from foodo.models import FooDo, User, Base, all_headers
 # TODO: Create setup.py
 
@@ -149,3 +146,7 @@ def main():
         traceback.print_exc()
         print 'Something went wrong, exiting . . .'
         sys.exit(1)
+
+# TODO: Remove
+if __name__ == "__main__":
+    main()
