@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 """FooDo - A Command Line ToDo App"""
 import sys
 import os
@@ -148,5 +149,5 @@ def main():
         sys.exit(1)
 
 # TODO: Remove
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+#    main()
