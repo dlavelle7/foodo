@@ -147,7 +147,3 @@ def main():
         traceback.print_exc()
         print 'Something went wrong, exiting . . .'
         sys.exit(1)
-
-# TODO: Remove
-#if __name__ == "__main__":
-#    main()
