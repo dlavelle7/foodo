@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 """FooDo - A Command Line ToDo App"""
 import sys
 import os
@@ -20,9 +19,8 @@ engine = create_engine(sql_alchemy_db_uri, echo=False)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# TODO: Relative import works but not absolute
 from foodo.models import FooDo, User, Base, all_headers
-# TODO: Create setup.py
+
 
 def add_commit_model(model):
     session.add(model)
