@@ -1,6 +1,6 @@
 import unittest
 
-from foodo import foodo
+from foodo.foodo_main import Base, non_empty_string, User, FooDo
 from argparse import ArgumentTypeError
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -14,27 +14,27 @@ class Test(unittest.TestCase):
         engine = create_engine('sqlite://')
         Session = sessionmaker(bind=engine)
         self.session = Session()
-        foodo.Base.metadata.create_all(engine)
+        Base.metadata.create_all(engine)
 
     def tearDown(self):
         pass
 
     def test_non_empty_string(self):
         # Assert the Foodo title field accepts (and strips) non empty strings
-        self.assertRaises(ArgumentTypeError, foodo.non_empty_string, '')
-        self.assertRaises(ArgumentTypeError, foodo.non_empty_string, ' ')
-        self.assertRaises(ArgumentTypeError, foodo.non_empty_string, None)
-        self.assertRaises(ArgumentTypeError, foodo.non_empty_string, 12)
+        self.assertRaises(ArgumentTypeError, non_empty_string, '')
+        self.assertRaises(ArgumentTypeError, non_empty_string, ' ')
+        self.assertRaises(ArgumentTypeError, non_empty_string, None)
+        self.assertRaises(ArgumentTypeError, non_empty_string, 12)
 
-        self.assertEquals('a', foodo.non_empty_string('  a'))
-        self.assertEquals('b', foodo.non_empty_string('b  '))
-        self.assertEquals('.', foodo.non_empty_string(' . '))
-        self.assertEquals('123', foodo.non_empty_string(' 123 '))
+        self.assertEquals('a', non_empty_string('  a'))
+        self.assertEquals('b', non_empty_string('b  '))
+        self.assertEquals('.', non_empty_string(' . '))
+        self.assertEquals('123', non_empty_string(' 123 '))
 
     def test_list_columns_with_date(self):
-        user = foodo.User()
+        user = User()
         self.session.add(user)
-        foo = foodo.FooDo('Test', user.id)
+        foo = FooDo('Test', user.id)
         self.session.add(foo)
         self.session.commit()
 
