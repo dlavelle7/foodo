@@ -9,7 +9,8 @@ Installation
 * cd foodo/
 * python setup.py install
 
-Uninstall
----------
+Uninstall (Temporary)
+---------------------
 * pip uninstall foodo
 * rm $(which foodo)
+* rm -rf /home/david/.virtualenvs/foodo/local/lib/python2.7/site-packages/foodo/

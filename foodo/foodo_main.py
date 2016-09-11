@@ -8,10 +8,9 @@ from tabulate import tabulate
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# TODO: DB Path (goes into site-packages when installed)?
 # Configure SQLite DB
-basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, 'foo.db')
+basedir = os.path.abspath('/var/lib/foodo')
+db_path = os.path.join(basedir, 'foodo.db')
 sql_alchemy_db_uri = 'sqlite:///' + db_path
 # Create core interface to the DB (echo prints SQL statements)
 engine = create_engine(sql_alchemy_db_uri, echo=False)
@@ -130,7 +129,8 @@ def parse_args():
 def main():
     try:
         # Create DB Schema (with tables that don't yet exist)
-        if not os.path.exists(db_path):
+        if not os.path.exists(basedir):
+            os.mkdir(basedir)
             Base.metadata.create_all(engine)
 
         user = session.query(User).get(os.getuid())
@@ -141,7 +141,7 @@ def main():
         pargs = parse_args()
         pargs.func(pargs, user)
     # TODO: Better Exception handling
-    except Exception:
-        traceback.print_exc()
+    except Exception as exception:
+        print exception
         print 'Something went wrong, exiting . . .'
         sys.exit(1)
