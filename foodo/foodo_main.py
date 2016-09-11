@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # Configure SQLite DB
-basedir = os.path.abspath('/var/lib/foodo')
+basedir = os.path.join(os.path.expanduser('~'), 'foodo')
 db_path = os.path.join(basedir, 'foodo.db')
 sql_alchemy_db_uri = 'sqlite:///' + db_path
 # Create core interface to the DB (echo prints SQL statements)
