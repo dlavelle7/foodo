@@ -12,7 +12,7 @@ Installation
 
 Examples
 --------
-List your foodos (verbosely):
+List your foodos (verbosely!):
 ```bash
 (foodo) david@david-HP-ENVY-Notebook:~/workspace/foodo$ foodo list -v
 ╒══════╤═══════════════════╤════════════════╤══════════╕
@@ -42,7 +42,7 @@ List only active foodos:
    5  write some code    21:03 20-10-16  active
 ```
 
-List only selected columns of active foodos:
+List only selected columns of completed foodos:
 ```bash
 (foodo) david@david-HP-ENVY-Notebook:~/workspace/foodo$ foodo list -col Id Title -c
   Id  Title
